@@ -1,0 +1,205 @@
+/* 기본 스타일 초기화 */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden; /* 스크롤바 제거 */
+    background-color: #FBEBCF; /* 기본 배경색 */
+}
+
+/* 화면(스크린) 공통 스타일 */
+.screen {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* 전체 화면을 덮는 배경 이미지 스타일 */
+.full-bg {
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain; /* 이미지 비율을 유지하며 컨테이너에 맞춤 */
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0; /* 다른 요소들 뒤에 위치 */
+}
+
+
+
+/* 화면을 숨기는 유틸리티 클래스 */
+.hidden {
+    display: none; 
+}
+
+/* 시작 화면의 시작 버튼 */
+.start-btn {
+    position: absolute;
+    height: 15vh;
+    object-fit: contain;
+    bottom: 20.5%;
+    left: 50%;
+    transform: translateX(-50%) scale(1);
+    cursor: pointer;
+    transition: transform 0.2s ease; /* 부드러운 확대 효과 */
+}
+
+.start-btn:hover {
+    transform: translateX(-50%) scale(1.03); /* 마우스 올리면 살짝 커짐 */
+}
+
+/* 퀴즈 화면의 답변 버튼 컨테이너 */
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.3vh; /* 버튼 간 간격 */
+    position: absolute;
+    top: 66.2%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    z-index: 100; /* 다른 요소들보다 항상 위에 있도록 설정 */
+}
+
+/* 퀴즈 답변 버튼 */
+.answer-btn {
+    height: 10vh;
+    object-fit: contain;   
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    z-index: 50;
+}
+
+.answer-btn:hover {
+    transform: scale(1.03);
+}
+
+/* 결과 화면 스타일 */
+#result-screen {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    /* background-color: #FBEBCF; */ /* 배경색 제거 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 0%;
+    z-index: 11; /* 퀴즈 화면과 동일한 레벨 */
+}
+
+/* 결과 화면이 숨겨져 있을 때 내부 버튼도 숨김 */
+#result-screen.hidden .fixed-btn {
+    display: none;
+}
+
+/* 결과 이미지 */
+.result-img {
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain;
+    z-index: 1; /* 카메라보다 위에 위치 */
+    position: relative;
+}
+
+/* 카메라(웹캠) 컨테이너 */
+#camera-container {
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10; /* 결과 화면 뒤로 위치 */
+}
+
+/* 고정 버튼 공통 스타일 (결과 화면의 '다시하기', '전체보기') */
+.fixed-btn {
+    position: fixed;
+    cursor: pointer;
+    z-index: 2;
+    bottom: 7%;
+    width: 25vh;
+    transform: scale(1);
+    transition: transform 0.2s ease;
+}
+
+/* 왼쪽 버튼 (다시 시작) */
+.fixed-btn.left {
+    left: 15%;
+}
+
+/* 오른쪽 버튼 (전체 결과 보기) */
+.fixed-btn.right {
+    right: 15%;
+}
+
+.fixed-btn:hover {
+    transform: scale(1.03);
+}
+
+/* 로딩 화면 */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left:0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url(./images/loading.png);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 100; /* 최상위에 위치하여 모든 것을 덮음 */
+}
+
+/* 전체 AI 결과 목록 화면 */
+#all-results-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    z-index: 12; /* 로딩 화면 다음으로 높은 z-index */
+    background-color: #FBEBCF; /* 배경색 */
+    background-image: url('./images/AI.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* AI 로고 버튼 그리드 컨테이너 */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4열 그리드 */
+    gap: 40px;
+    max-width: 800px;
+    width: 100%;
+    padding: 0 20px;
+    justify-items: center;
+}
+
+/* AI 로고 버튼 */
+.ai-button {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.ai-button:hover {
+    transform: scale(1.1);
+}
+
+/* 카메라 영상 좌우 반전 (거울 모드) */
+#camera {
+    transform: scaleX(-1);
+    aspect-ratio: 5/5;
+    height: 40vh;
+    border-radius: 12px;
+    object-fit: cover;
+}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI_Personal_Test</title>
+    <link rel="stylesheet" href="./style.css">
+    <!-- 로딩 이미지를 미리 불러와서 로딩 화면이 바로 뜰 수 있도록 함 -->
+    <link rel="preload" as="image" href="./images/loading.png">
+</head>
+<body>
+    <!-- 시작 화면 -->
+    <div id="start-screen" class="screen"> 
+        <img src="./images/00.png" alt="시작화면 배경" class="full-bg">
+        <img src="./images/00start.png" alt="시작 버튼" class="start-btn" onclick="startQuiz()">
+    </div>
+
+    <!-- 퀴즈 화면 -->
+    <div id="quiz-screen" class="screen hidden">
+        <img id="question-bg" class="full-bg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="질문 배경">
+        <!-- 답변 버튼들이 동적으로 추가될 컨테이너 -->
+        <div id="quiz-buttons" class="button-container"></div>
+    </div>
+    
+    <!-- 최종 결과 화면 -->
+    <div id="result-screen" class="screen hidden">
+        <!-- 결과 이미지가 표시될 영역 -->
+        <img id="result-image" class="result-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="결과 이미지"/>
+        
+        <!-- 결과 화면의 버튼 컨테이너 (현재는 비어있음) -->
+        <div class="result-buttons-container"></div>
+        <!-- 다시하기 버튼 -->
+        <img src="./images/restart_button.png" class="fixed-btn left" alt="다시하기" onclick="reset()">
+        <!-- 전체 AI 결과보기 버튼 -->
+        <img src="./images/AI_button.png" class="fixed-btn right" alt="전체 결과보기">
+    </div>
+
+    <!-- 
+      카메라 영상(웹캠)을 보여줄 컨테이너.
+      결과 화면에서만 나타나며, 평소에는 display: none 상태.
+      <style> 태그를 HTML 내에 직접 작성하는 대신, style.css 파일로 옮기는 것을 권장.
+    -->
+    
+    <div id="camera-container" style="display: none;">
+        <video id="camera" autoplay playsinline></video>
+    </div>
+
+    <!-- 로딩 화면 -->
+    <div id="loading-screen" class="hidden"></div>
+
+    <!-- 전체 AI 결과 목록 화면 -->
+    <div id="all-results-screen" class="screen hidden">
+        
+        <img src="./images/restart_button.png" class="restart-btn" alt="다시하기" onclick="reset()">
+
+        <!-- 8개 AI 결과로 바로 갈 수 있는 버튼 그리드 -->
+        <div class="grid-container">
+            <img src="./images/to_notion.png" class="ai-button" alt="Notion 결과보기" onclick="showSingleResult('notion')">
+            <img src="./images/to_chatgpt.png" class="ai-button" alt="ChatGPT 결과보기" onclick="showSingleResult('chatgpt')">
+            <img src="./images/to_claude.png" class="ai-button" alt="Claude 결과보기" onclick="showSingleResult('claude')">
+            <img src="./images/to_copilot.png" class="ai-button" alt="Copilot 결과보기" onclick="showSingleResult('copilot')">
+            <img src="./images/to_deepseek.png" class="ai-button" alt="DeepSeek 결과보기" onclick="showSingleResult('deepseek')">
+            <img src="./images/to_gemini.png" class="ai-button" alt="Gemini 결과보기" onclick="showSingleResult('gemini')">
+            <img src="./images/to_perplexity.png" class="ai-button" alt="Perplexity 결과보기" onclick="showSingleResult('perplexity')">
+            <img src="./images/to_wrtn.png" class="ai-button" alt="Wrtn 결과보기" onclick="showSingleResult('wrtn')">
+        </div>
+    </div>
+
+    <!-- 자바스크립트 파일 로드 -->
+    <script src="./script.js"></script>
+</body>
+</html>
