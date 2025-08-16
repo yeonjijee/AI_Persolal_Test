@@ -318,20 +318,28 @@ async function captureAndShare() {
             return;
         }
         
-        // 캡처할 영역을 결과 화면으로 설정
+        // 캡처할 영역을 결과 화면으로 설정 (웹캠 포함)
         const resultScreen = document.getElementById('result-screen');
         if (!resultScreen) {
             throw new Error("결과 화면을 찾을 수 없습니다.");
         }
         
-        // 웹캠을 임시로 숨김 (캡처에 포함하지 않기 위해)
+        // 웹캠이 현재 표시되고 있는지 확인하고 강제로 표시
         const cameraContainer = document.getElementById('camera-container');
-        const wasCameraVisible = cameraContainer && cameraContainer.style.display !== 'none';
-        if (wasCameraVisible) {
-            cameraContainer.style.display = 'none';
+        const cameraVideo = document.getElementById('camera');
+        
+        // 웹캠을 확실히 표시되도록 설정
+        if (cameraContainer) {
+            cameraContainer.style.display = 'block';
+            cameraContainer.style.visibility = 'visible';
+            console.log("웹캠 강제 표시됨");
+        }
+        if (cameraVideo) {
+            cameraVideo.style.display = 'block';
+            cameraVideo.style.visibility = 'visible';
         }
         
-        // 캡처 버튼도 임시로 숨김
+        // 캡처 버튼만 임시로 숨김 (결과 이미지에서 제외)
         const captureBtn = document.querySelector('.capture-btn');
         const btnWasVisible = captureBtn && captureBtn.style.display !== 'none';
         if (captureBtn) {
@@ -340,66 +348,99 @@ async function captureAndShare() {
         
         console.log("html2canvas 실행 중...");
         
-        // html2canvas로 화면 캡처 (더 안전한 옵션 사용)
+        // html2canvas로 화면 캡처 (웹캠 포함, 전체 화면)
         const canvas = await html2canvas(resultScreen, {
-            allowTaint: false,
-            useCORS: false,
-            scale: 1, // 스케일을 1로 낮춤 (성능 향상)
+            allowTaint: true, // Tainted 이미지 허용
+            useCORS: true, // CORS 활성화
+            scale: 1,
             backgroundColor: '#FBEBCF',
-            logging: true, // 디버깅용 로그 활성화
+            logging: false,
             height: window.innerHeight,
             width: window.innerWidth,
             scrollX: 0,
-            scrollY: 0
+            scrollY: 0,
+            foreignObjectRendering: true,
+            imageTimeout: 0,
+            removeContainer: true,
+            // 웹캠(video) 요소 캡처를 위한 설정
+            ignoreElements: function(element) {
+                // 캡처 버튼만 제외하고 모든 요소 포함 (웹캠 포함)
+                return element.classList && element.classList.contains('capture-btn');
+            }
         });
         
         console.log("캔버스 생성 완료:", canvas.width, "x", canvas.height);
         
-        // 웹캠과 캡처 버튼 다시 보이기
-        if (wasCameraVisible && cameraContainer) {
-            cameraContainer.style.display = 'block';
-        }
+        // 캡처 버튼 다시 보이기 (웹캠은 원래 숨기지 않았음)
         if (btnWasVisible && captureBtn) {
             captureBtn.style.display = 'block';
         }
         
-        // 캔버스를 Blob으로 변환
-        canvas.toBlob((blob) => {
-            if (!blob) {
-                throw new Error("이미지 생성에 실패했습니다.");
+        // 캔버스를 이미지로 변환 (대체 방법 포함)
+        try {
+            // 방법 1: toBlob 시도
+            canvas.toBlob((blob) => {
+                if (!blob) {
+                    throw new Error("Blob 생성 실패");
+                }
+                
+                console.log("Blob 생성 완료, 크기:", blob.size);
+                
+                // 다운로드 링크 생성
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = `AI-성격테스트-결과-${new Date().getTime()}.png`;
+                link.href = url;
+                
+                // 다운로드 실행
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // 메모리 정리
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                
+                // 공유 옵션 표시
+                showShareOptions();
+                
+                console.log("화면 캡처 및 다운로드 완료!");
+                
+            }, 'image/png', 0.9);
+            
+        } catch (blobError) {
+            console.log("toBlob 실패, 대체 방법 사용:", blobError);
+            
+            // 방법 2: toDataURL 사용 (대체 방법)
+            try {
+                const dataURL = canvas.toDataURL('image/png', 0.9);
+                const link = document.createElement('a');
+                link.download = `AI-성격테스트-결과-${new Date().getTime()}.png`;
+                link.href = dataURL;
+                
+                // 다운로드 실행
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // 공유 옵션 표시
+                showShareOptions();
+                
+                console.log("대체 방법으로 캡처 완료!");
+                
+            } catch (dataURLError) {
+                console.error("toDataURL도 실패:", dataURLError);
+                
+                // 방법 3: 브라우저 스크린샷 기능 안내
+                alert("화면 캡처가 제한되어 있습니다.\n\n대안:\n1. 휴대폰 스크린샷 기능 사용\n2. 브라우저 개발자 도구 > 스크린샷 기능 사용\n\n죄송합니다!");
             }
-            
-            console.log("Blob 생성 완료, 크기:", blob.size);
-            
-            // 다운로드 링크 생성
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.download = `AI-성격테스트-결과-${new Date().getTime()}.png`;
-            link.href = url;
-            
-            // 다운로드 실행
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            // 메모리 정리
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
-            
-            // 공유 옵션 표시
-            showShareOptions();
-            
-            console.log("화면 캡처 및 다운로드 완료!");
-            
-        }, 'image/png', 0.9);
+        }
         
     } catch (error) {
         console.error("화면 캡처 상세 오류:", error);
         alert(`화면 캡처에 실패했습니다.\n오류: ${error.message}\n브라우저를 새로고침 후 다시 시도해주세요.`);
         
-        // 숨겼던 요소들 복원
-        const cameraContainer = document.getElementById('camera-container');
+        // 캡처 버튼 복원 (웹캠은 원래 숨기지 않았음)
         const captureBtn = document.querySelector('.capture-btn');
-        if (cameraContainer) cameraContainer.style.display = 'block';
         if (captureBtn) captureBtn.style.display = 'block';
     }
 }
