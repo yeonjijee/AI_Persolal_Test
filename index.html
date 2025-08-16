@@ -31,6 +31,8 @@
         <div class="result-buttons-container"></div>
         <!-- 다시하기 버튼 -->
         <img src="./images/restart_button.png" class="fixed-btn left" alt="다시하기" onclick="reset()">
+        <!-- 화면 캡처 버튼 -->
+        <button class="fixed-btn center capture-btn" onclick="captureAndShare()" alt="결과 캡처하기">📷</button>
         <!-- 전체 AI 결과보기 버튼 -->
         <img src="./images/AI_button.png" class="fixed-btn right" alt="전체 결과보기" onclick="console.log('AI button clicked!'); showAllResults()">
     </div>
@@ -66,6 +68,8 @@
         </div>
     </div>
 
+    <!-- html2canvas 라이브러리 (화면 캡처용) -->
+    <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <!-- 자바스크립트 파일 로드 -->
     <script src="./script.js"></script>
 </body>

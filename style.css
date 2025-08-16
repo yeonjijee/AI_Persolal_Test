@@ -136,6 +136,31 @@ html, body {
     right: 15%;
 }
 
+/* 가운데 버튼 (화면 캡처) */
+.fixed-btn.center {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* 화면 캡처 버튼 특별 스타일 */
+.capture-btn {
+    background: linear-gradient(135deg, #ff6b6b, #feca57);
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.capture-btn:hover {
+    transform: translateX(-50%) scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
 .fixed-btn:hover {
     transform: scale(1.03);
 }
@@ -170,7 +195,7 @@ html, body {
     top: 20vh;
     left: 50%;
     transform: translateX(-50%);
-    width: 200px; /* vh에서 px로 되돌림 (원래 크기) */
+    width: clamp(120px, 25vw, 160px); /* 모바일에서 더 작게, 최소 120px, 최대 160px */
     height: auto;
     cursor: pointer;
     transition: transform 0.2s ease;

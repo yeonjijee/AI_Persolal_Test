@@ -303,6 +303,137 @@ function stopCamera() {
     document.getElementById('camera-container').style.display = 'none';
 }
 
+// --- 화면 캡처 및 공유 기능 ---
+/**
+ * 결과 화면을 캡처하고 다운로드/공유 옵션을 제공하는 함수
+ */
+async function captureAndShare() {
+    try {
+        console.log("화면 캡처 시작...");
+        
+        // html2canvas 라이브러리가 로드되었는지 확인
+        if (typeof html2canvas === 'undefined') {
+            console.error("html2canvas 라이브러리가 로드되지 않았습니다.");
+            alert("캡처 라이브러리 로딩 중입니다. 잠시 후 다시 시도해주세요.");
+            return;
+        }
+        
+        // 캡처할 영역을 결과 화면으로 설정
+        const resultScreen = document.getElementById('result-screen');
+        if (!resultScreen) {
+            throw new Error("결과 화면을 찾을 수 없습니다.");
+        }
+        
+        // 웹캠을 임시로 숨김 (캡처에 포함하지 않기 위해)
+        const cameraContainer = document.getElementById('camera-container');
+        const wasCameraVisible = cameraContainer && cameraContainer.style.display !== 'none';
+        if (wasCameraVisible) {
+            cameraContainer.style.display = 'none';
+        }
+        
+        // 캡처 버튼도 임시로 숨김
+        const captureBtn = document.querySelector('.capture-btn');
+        const btnWasVisible = captureBtn && captureBtn.style.display !== 'none';
+        if (captureBtn) {
+            captureBtn.style.display = 'none';
+        }
+        
+        console.log("html2canvas 실행 중...");
+        
+        // html2canvas로 화면 캡처 (더 안전한 옵션 사용)
+        const canvas = await html2canvas(resultScreen, {
+            allowTaint: false,
+            useCORS: false,
+            scale: 1, // 스케일을 1로 낮춤 (성능 향상)
+            backgroundColor: '#FBEBCF',
+            logging: true, // 디버깅용 로그 활성화
+            height: window.innerHeight,
+            width: window.innerWidth,
+            scrollX: 0,
+            scrollY: 0
+        });
+        
+        console.log("캔버스 생성 완료:", canvas.width, "x", canvas.height);
+        
+        // 웹캠과 캡처 버튼 다시 보이기
+        if (wasCameraVisible && cameraContainer) {
+            cameraContainer.style.display = 'block';
+        }
+        if (btnWasVisible && captureBtn) {
+            captureBtn.style.display = 'block';
+        }
+        
+        // 캔버스를 Blob으로 변환
+        canvas.toBlob((blob) => {
+            if (!blob) {
+                throw new Error("이미지 생성에 실패했습니다.");
+            }
+            
+            console.log("Blob 생성 완료, 크기:", blob.size);
+            
+            // 다운로드 링크 생성
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.download = `AI-성격테스트-결과-${new Date().getTime()}.png`;
+            link.href = url;
+            
+            // 다운로드 실행
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // 메모리 정리
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            
+            // 공유 옵션 표시
+            showShareOptions();
+            
+            console.log("화면 캡처 및 다운로드 완료!");
+            
+        }, 'image/png', 0.9);
+        
+    } catch (error) {
+        console.error("화면 캡처 상세 오류:", error);
+        alert(`화면 캡처에 실패했습니다.\n오류: ${error.message}\n브라우저를 새로고침 후 다시 시도해주세요.`);
+        
+        // 숨겼던 요소들 복원
+        const cameraContainer = document.getElementById('camera-container');
+        const captureBtn = document.querySelector('.capture-btn');
+        if (cameraContainer) cameraContainer.style.display = 'block';
+        if (captureBtn) captureBtn.style.display = 'block';
+    }
+}
+
+/**
+ * 공유 옵션을 표시하는 함수
+ */
+function showShareOptions() {
+    // 약간의 딜레이 후 공유 옵션 표시
+    setTimeout(() => {
+        // 모바일 기기에서 Web Share API 사용 가능한지 확인
+        if (navigator.share) {
+            // Web Share API 사용 (모바일)
+            navigator.share({
+                title: 'AI 성격 테스트 결과',
+                text: '나의 AI 성격 테스트 결과를 확인해보세요!',
+                url: window.location.href
+            }).catch(err => console.log('공유 취소:', err));
+        } else {
+            // 데스크톱에서는 URL 복사 알림
+            const currentUrl = window.location.href;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(currentUrl).then(() => {
+                    alert('테스트 링크가 클립보드에 복사되었습니다!\n친구들에게 공유해보세요: ' + currentUrl);
+                }).catch(() => {
+                    alert('테스트 링크: ' + currentUrl + '\n\n위 링크를 복사해서 친구들에게 공유해보세요!');
+                });
+            } else {
+                alert('테스트 링크: ' + currentUrl + '\n\n위 링크를 복사해서 친구들에게 공유해보세요!');
+            }
+        }
+    }, 500);
+}
+
 // --- 초기 설정 ---
 document.addEventListener('DOMContentLoaded', () => {
     initCamera(); // Initialize camera once on page load
