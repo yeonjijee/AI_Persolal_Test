@@ -1,3 +1,5 @@
+console.log("script.js loaded and executing.");
+
 /**
  * 퀴즈 데이터
  * bg: 질문 화면 배경 이미지 파일명
@@ -188,21 +190,65 @@ function showResult() {
 function reset() {
     current = 0;
     scores = {};
+    
+    // 결과 이미지 다시 보이도록 설정
+    const resultImage = document.getElementById("result-image");
+    if (resultImage) {
+        resultImage.style.display = "block";
+    }
+    
     // 모든 화면을 숨기고 시작 화면만 표시
     document.getElementById("result-screen").classList.add("hidden");
-    document.getElementById("all-results-screen").classList.add("hidden"); // Ensure all-results is hidden
+    document.getElementById("all-results-screen").classList.add("hidden");
     document.getElementById("start-screen").classList.remove("hidden");
-    stopCamera(); // Hide camera on reset
+    stopCamera();
+    console.log("Reset completed - back to start screen.");
 }
 
 /**
  * 전체 AI 결과 목록을 보여주는 함수
  */
 function showAllResults() {
-    document.getElementById("result-screen").classList.add("hidden");
-    document.getElementById("all-results-screen").classList.remove("hidden");
-    // Camera should remain visible, but behind this screen (handled by CSS z-index)
-    // No stopCamera() here
+    console.log("🔥 showAllResults() called - AI button clicked!");
+    try {
+        const resultScreen = document.getElementById("result-screen");
+        const allResultsScreen = document.getElementById("all-results-screen");
+        const resultImage = document.getElementById("result-image");
+
+        console.log("resultScreen before hiding:", resultScreen);
+        console.log("allResultsScreen before showing:", allResultsScreen);
+
+        // 결과 이미지 숨기기
+        if (resultImage) {
+            resultImage.style.display = 'none';
+            console.log("Result image hidden.");
+        }
+
+        if (resultScreen) {
+            resultScreen.classList.add("hidden");
+            console.log("resultScreen after hiding:", resultScreen.classList.contains("hidden"));
+        } else {
+            console.error("resultScreen not found!");
+        }
+
+        if (allResultsScreen) {
+            allResultsScreen.classList.remove("hidden");
+            allResultsScreen.style.display = "flex"; // 명시적으로 display 설정
+            allResultsScreen.style.backgroundImage = "url('./images/AI.png')";
+            allResultsScreen.style.backgroundSize = "auto 100vh"; // 높이 100vh, 너비 자동 (비율 고정)
+            allResultsScreen.style.backgroundPosition = "center top"; // 수평 중앙, 수직 상단 정렬
+            allResultsScreen.style.backgroundRepeat = "no-repeat";
+            
+            console.log("All results screen shown with AI.png background (center top)");
+        } else {
+            console.error("allResultsScreen not found!");
+        }
+        stopCamera();
+        console.log("Camera stopped.");
+
+    } catch (e) {
+        console.error("Error in showAllResults():", e);
+    }
 }
 
 /**
@@ -219,6 +265,7 @@ function showSingleResult(type) {
     document.getElementById("all-results-screen").classList.add("hidden");
     document.getElementById("result-screen").classList.remove("hidden");
     startCamera(); // Show camera on single result screen
+    console.log(`Showing single result for: ${type}`);
 }
 
 // --- 카메라 제어 함수 ---
@@ -259,12 +306,4 @@ function stopCamera() {
 // --- 초기 설정 ---
 document.addEventListener('DOMContentLoaded', () => {
     initCamera(); // Initialize camera once on page load
-    // Add event listener for the AI_button
-    const aiButton = document.querySelector('.fixed-btn.right');
-    if (aiButton) {
-        aiButton.addEventListener('click', showAllResults);
-        console.log("AI_button event listener added.");
-    } else {
-        console.error("AI_button not found for event listener!");
-    }
 });

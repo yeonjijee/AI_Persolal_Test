@@ -30,7 +30,7 @@ html, body {
 
 /* 화면을 숨기는 유틸리티 클래스 */
 .hidden {
-    display: none; 
+    display: none !important; 
 }
 
 /* 시작 화면의 시작 버튼 */
@@ -119,9 +119,9 @@ html, body {
 .fixed-btn {
     position: fixed;
     cursor: pointer;
-    z-index: 2;
+    z-index: 50; /* z-index를 2에서 50으로 증가 */
     bottom: 7%;
-    width: 25vh;
+    width: clamp(120px, 30vw, 225px);
     transform: scale(1);
     transition: transform 0.2s ease;
 }
@@ -148,7 +148,7 @@ html, body {
     width: 100vw;
     height: 100vh;
     background-image: url(./images/loading.png);
-    background-size: contain;
+    background-size: auto 115.5vh; /* 105vh에서 10% 증가 (115.5vh) */
     background-position: center;
     background-repeat: no-repeat;
     z-index: 100; /* 최상위에 위치하여 모든 것을 덮음 */
@@ -156,39 +156,56 @@ html, body {
 
 /* 전체 AI 결과 목록 화면 */
 #all-results-screen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    display: block; /* flex에서 block으로 변경하여 간섭 제거 */
     position: relative;
     width: 100vw;
     height: 100vh;
-    z-index: 12; /* 로딩 화면 다음으로 높은 z-index */
-    background-color: #FBEBCF; /* 배경색 */
-    background-image: url('./images/AI.png');
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
+    z-index: 12;
+    background-color: #FBEBCF; /* 기본 배경색 */
+}
+
+/* 전체 AI 결과 화면의 다시하기 버튼 */
+.restart-btn {
+    position: absolute;
+    top: 20vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px; /* vh에서 px로 되돌림 (원래 크기) */
+    height: auto;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    z-index: 15;
+}
+
+.restart-btn:hover {
+    transform: translateX(-50%) scale(1.05);
 }
 
 /* AI 로고 버튼 그리드 컨테이너 */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4열 그리드 */
-    gap: 40px;
-    max-width: 800px;
+    grid-template-columns: repeat(2, 1fr); /* 2열 그리드 (2x4 배치) */
+    column-gap: max(0.8vh, 5px); /* 가로 간격: vh에 비례, 최소 5px */
+    row-gap: 0; /* 세로 간격을 0으로 설정 */
+    max-width: 450px;
     width: 100%;
     padding: 0 20px;
     justify-items: center;
+    position: absolute;
+    top: 32vh;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 13;
 }
 
 /* AI 로고 버튼 */
 .ai-button {
-    width: 100px;
-    height: 100px;
+    width: 18.59vh; /* 16.9vh에서 10% 증가 (18.59vh) */
+    height: 18.59vh; /* 16.9vh에서 10% 증가 (18.59vh) */
     object-fit: contain;
     cursor: pointer;
     transition: transform 0.2s ease;
+    margin-top: max(-4vh, -30px); /* 세로 간격: vh에 비례, 최소 -30px */
 }
 
 .ai-button:hover {

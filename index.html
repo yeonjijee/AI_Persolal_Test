@@ -32,7 +32,7 @@
         <!-- 다시하기 버튼 -->
         <img src="./images/restart_button.png" class="fixed-btn left" alt="다시하기" onclick="reset()">
         <!-- 전체 AI 결과보기 버튼 -->
-        <img src="./images/AI_button.png" class="fixed-btn right" alt="전체 결과보기">
+        <img src="./images/AI_button.png" class="fixed-btn right" alt="전체 결과보기" onclick="console.log('AI button clicked!'); showAllResults()">
     </div>
 
     <!-- 
@@ -53,14 +53,14 @@
         
         <img src="./images/restart_button.png" class="restart-btn" alt="다시하기" onclick="reset()">
 
-        <!-- 8개 AI 결과로 바로 갈 수 있는 버튼 그리드 -->
+        <!-- 8개 AI 결과로 바로 갈 수 있는 버튼 그리드 (알파벳 순 정렬) -->
         <div class="grid-container">
-            <img src="./images/to_notion.png" class="ai-button" alt="Notion 결과보기" onclick="showSingleResult('notion')">
             <img src="./images/to_chatgpt.png" class="ai-button" alt="ChatGPT 결과보기" onclick="showSingleResult('chatgpt')">
             <img src="./images/to_claude.png" class="ai-button" alt="Claude 결과보기" onclick="showSingleResult('claude')">
             <img src="./images/to_copilot.png" class="ai-button" alt="Copilot 결과보기" onclick="showSingleResult('copilot')">
             <img src="./images/to_deepseek.png" class="ai-button" alt="DeepSeek 결과보기" onclick="showSingleResult('deepseek')">
             <img src="./images/to_gemini.png" class="ai-button" alt="Gemini 결과보기" onclick="showSingleResult('gemini')">
+            <img src="./images/to_notion.png" class="ai-button" alt="Notion 결과보기" onclick="showSingleResult('notion')">
             <img src="./images/to_perplexity.png" class="ai-button" alt="Perplexity 결과보기" onclick="showSingleResult('perplexity')">
             <img src="./images/to_wrtn.png" class="ai-button" alt="Wrtn 결과보기" onclick="showSingleResult('wrtn')">
         </div>
