@@ -136,37 +136,32 @@ html, body {
     right: 15%;
 }
 
-/* 가운데 버튼 (화면 캡처) */
-.fixed-btn.center {
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-/* 화면 캡처 버튼 특별 스타일 */
-.capture-btn {
-    background: linear-gradient(135deg, #ff6b6b, #feca57);
-    border: none;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
-    color: white;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.capture-btn:hover {
-    transform: translateX(-50%) scale(1.1);
-    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
-}
 
 .fixed-btn:hover {
     transform: scale(1.03);
 }
+
+/* 전체화면 안내 메시지 */
+.fullscreen-hint {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+    z-index: 100;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.fullscreen-hint:hover {
+    opacity: 1;
+}
+
 
 /* 로딩 화면 */
 #loading-screen {

@@ -303,345 +303,57 @@ function stopCamera() {
     document.getElementById('camera-container').style.display = 'none';
 }
 
-// --- 화면 캡처 및 공유 기능 ---
-
+// --- 전체화면 기능 (키보드 단축키) ---
 /**
- * GoFullPage 확장 프로그램 감지 및 활용 시도
+ * 키보드 이벤트 처리 함수
  */
-function tryGoFullPageCapture() {
-    // GoFullPage 확장 프로그램이 설치되어 있는지 확인
-    if (window.gofullpage || document.querySelector('[data-extension="gofullpage"]')) {
-        console.log("GoFullPage 감지됨");
-        
-        // GoFullPage 메시지 전송 시도
-        try {
-            window.postMessage({
-                type: 'GOFULLPAGE_CAPTURE',
-                target: 'gofullpage-extension'
-            }, '*');
-            
-            return true;
-        } catch (e) {
-            console.log("GoFullPage 연동 실패:", e);
-            return false;
-        }
-    }
-    return false;
-}
-
-/**
- * 브라우저의 기본 스크린샷 API 시도 (Chrome 등)
- */
-async function tryNativeScreenCapture() {
-    try {
-        // Screen Capture API 사용 시도 (실험적 기능)
-        if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-            const stream = await navigator.mediaDevices.getDisplayMedia({
-                video: { mediaSource: 'screen' }
-            });
-            
-            // 스트림을 비디오 요소에 연결하여 캡처
-            const video = document.createElement('video');
-            video.srcObject = stream;
-            video.play();
-            
-            return new Promise((resolve) => {
-                video.addEventListener('loadedmetadata', () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(video, 0, 0);
-                    
-                    // 스트림 정리
-                    stream.getTracks().forEach(track => track.stop());
-                    
-                    canvas.toBlob(resolve, 'image/png');
-                });
-            });
-        }
-    } catch (e) {
-        console.log("네이티브 스크린 캡처 실패:", e);
-        return null;
-    }
-}
-
-/**
- * 결과 화면을 캡처하고 다운로드/공유 옵션을 제공하는 함수
- */
-async function captureAndShare() {
-    try {
-        console.log("화면 캡처 시작...");
-        
-        // 1단계: GoFullPage 확장 프로그램 시도
-        console.log("1단계: GoFullPage 시도");
-        if (tryGoFullPageCapture()) {
-            alert("GoFullPage 확장 프로그램을 통해 캡처하세요!\n\n확장 프로그램 아이콘을 클릭하거나\n단축키 (Ctrl+Shift+P)를 사용하세요.");
+function handleKeyPress(event) {
+    // F키 (F 또는 f)로 전체화면 토글
+    if (event.key === 'f' || event.key === 'F') {
+        // 입력 필드에서는 동작하지 않도록 예외 처리
+        if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
             return;
         }
         
-        // 2단계: 브라우저 네이티브 스크린 캡처 시도
-        console.log("2단계: 네이티브 스크린 캡처 시도");
-        const nativeBlob = await tryNativeScreenCapture();
-        if (nativeBlob) {
-            console.log("네이티브 캡처 성공!");
-            downloadAndShare(nativeBlob, "네이티브-스크린-캡처");
-            return;
-        }
-        
-        // 3단계: html2canvas 사용 (기존 방법)
-        console.log("3단계: html2canvas 사용");
-        
-        // html2canvas 라이브러리가 로드되었는지 확인
-        if (typeof html2canvas === 'undefined') {
-            console.error("html2canvas 라이브러리가 로드되지 않았습니다.");
-            alert("캡처 라이브러리 로딩 중입니다. 잠시 후 다시 시도해주세요.");
-            return;
-        }
-        
-        // 캡처할 영역을 전체 body로 설정 (화면에 보이는 모든 것 포함)
-        const captureTarget = document.body;
-        if (!captureTarget) {
-            throw new Error("캡처할 영역을 찾을 수 없습니다.");
-        }
-        
-        // 웹캠이 현재 표시되고 있는지 확인하고 강제로 표시
-        const cameraContainer = document.getElementById('camera-container');
-        const cameraVideo = document.getElementById('camera');
-        
-        // 웹캠을 확실히 표시되도록 설정
-        if (cameraContainer) {
-            cameraContainer.style.display = 'block';
-            cameraContainer.style.visibility = 'visible';
-            console.log("웹캠 강제 표시됨");
-        }
-        if (cameraVideo) {
-            cameraVideo.style.display = 'block';
-            cameraVideo.style.visibility = 'visible';
-        }
-        
-        // 캡처 버튼만 임시로 숨김 (결과 이미지에서 제외)
-        const captureBtn = document.querySelector('.capture-btn');
-        const btnWasVisible = captureBtn && captureBtn.style.display !== 'none';
-        if (captureBtn) {
-            captureBtn.style.display = 'none';
-        }
-        
-        console.log("html2canvas 실행 중...");
-        
-        // html2canvas로 전체 화면 캡처 (화면에 보이는 그대로)
-        const canvas = await html2canvas(captureTarget, {
-            allowTaint: true,
-            useCORS: false,
-            scale: 1,
-            backgroundColor: '#FBEBCF',
-            logging: true,
-            width: window.innerWidth,
-            height: window.innerHeight,
-            scrollX: 0,
-            scrollY: 0,
-            x: 0,
-            y: 0,
-            onclone: function(clonedDoc) {
-                // 클론된 문서에서도 웹캠이 보이도록 설정
-                const clonedCamera = clonedDoc.getElementById('camera-container');
-                if (clonedCamera) {
-                    clonedCamera.style.display = 'block';
-                    clonedCamera.style.visibility = 'visible';
-                }
-            },
-            ignoreElements: function(element) {
-                // 캡처 버튼과 숨겨진 화면들 제외
-                if (element.classList && element.classList.contains('capture-btn')) {
-                    return true;
-                }
-                if (element.classList && element.classList.contains('hidden')) {
-                    return true;
-                }
-                return false;
-            }
-        });
-        
-        console.log("캔버스 생성 완료:", canvas.width, "x", canvas.height);
-        
-        // 캡처 버튼 다시 보이기 (웹캠은 원래 숨기지 않았음)
-        if (btnWasVisible && captureBtn) {
-            captureBtn.style.display = 'block';
-        }
-        
-        // 캔버스를 이미지로 변환 (대체 방법 포함)
-        try {
-            // 방법 1: toBlob 시도
-            canvas.toBlob((blob) => {
-                if (!blob) {
-                    throw new Error("Blob 생성 실패");
-                }
-                
-                console.log("Blob 생성 완료, 크기:", blob.size);
-                
-                // 공통 다운로드 및 공유 함수 사용
-                downloadAndShare(blob, "html2canvas-캡처");
-                
-            }, 'image/png', 0.9);
-            
-        } catch (blobError) {
-            console.log("toBlob 실패, 대체 방법 사용:", blobError);
-            
-            // 방법 2: toDataURL 사용 (대체 방법)
-            try {
-                const dataURL = canvas.toDataURL('image/png', 0.9);
-                
-                // DataURL을 Blob으로 변환하여 공유
-                const blob = dataURLtoBlob(dataURL);
-                downloadAndShare(blob, "dataURL-캡처");
-                
-                console.log("대체 방법으로 캡처 완료!");
-                
-            } catch (dataURLError) {
-                console.error("toDataURL도 실패:", dataURLError);
-                
-                // 방법 3: 수동 캡처 방법 안내
-                showCaptureAlternatives();
-            }
-        }
-        
-    } catch (error) {
-        console.error("화면 캡처 상세 오류:", error);
-        alert(`화면 캡처에 실패했습니다.\n오류: ${error.message}\n브라우저를 새로고침 후 다시 시도해주세요.`);
-        
-        // 캡처 버튼 복원 (웹캠은 원래 숨기지 않았음)
-        const captureBtn = document.querySelector('.capture-btn');
-        if (captureBtn) captureBtn.style.display = 'block';
+        event.preventDefault();
+        toggleFullscreen();
     }
 }
 
 /**
- * 캡처된 이미지를 다운로드하고 공유하는 공통 함수
+ * 전체화면 모드를 토글하는 함수
  */
-function downloadAndShare(blob, filename = "AI-성격테스트-결과") {
-    // 다운로드 링크 생성
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.download = `${filename}-${new Date().getTime()}.png`;
-    link.href = url;
-    
-    // 다운로드 실행
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // 캡처한 이미지로 공유 옵션 표시
-    showShareOptions(blob);
-    
-    // 메모리 정리 (공유 후에)
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
-    
-    console.log("화면 캡처 및 다운로드 완료!");
-}
-
-/**
- * DataURL을 Blob으로 변환하는 헬퍼 함수
- */
-function dataURLtoBlob(dataURL) {
-    const arr = dataURL.split(',');
-    const mime = arr[0].match(/:(.*?);/)[1];
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) {
-        u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new Blob([u8arr], { type: mime });
-}
-
-/**
- * 캡처한 이미지를 공유하는 함수
- */
-function showShareOptions(imageBlob) {
-    // 약간의 딜레이 후 공유 옵션 표시
-    setTimeout(() => {
-        // 모바일 기기에서 Web Share API 사용 가능한지 확인
-        if (navigator.share && navigator.canShare) {
-            // 이미지 파일 공유 (모바일)
-            const shareData = {
-                title: 'AI 성격 테스트 결과',
-                text: '나의 AI 성격 테스트 결과를 확인해보세요!',
-                files: [new File([imageBlob], 'AI-성격테스트-결과.png', { type: 'image/png' })]
-            };
-            
-            // 파일 공유 가능한지 확인
-            if (navigator.canShare(shareData)) {
-                navigator.share(shareData).catch(err => {
-                    console.log('이미지 공유 취소:', err);
-                    // 이미지 공유 실패시 링크 공유로 대체
-                    shareLink();
-                });
-            } else {
-                console.log('파일 공유 불가능, 링크 공유로 대체');
-                shareLink();
-            }
-        } else {
-            // 데스크톱에서는 이미지 다운로드 완료 알림 + 링크 복사
-            alert('이미지가 다운로드되었습니다!\n\n친구들과 공유하려면:\n1. 다운로드된 이미지를 SNS에 업로드\n2. 아래 링크도 함께 공유해보세요!');
-            shareLink();
-        }
-    }, 500);
-}
-
-/**
- * 사이트 링크를 공유하는 함수 (대체 방법)
- */
-function shareLink() {
-    const currentUrl = window.location.href;
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(currentUrl).then(() => {
-            alert('테스트 링크가 클립보드에 복사되었습니다!\n친구들에게 공유해보세요: ' + currentUrl);
-        }).catch(() => {
-            alert('테스트 링크: ' + currentUrl + '\n\n위 링크를 복사해서 친구들에게 공유해보세요!');
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        // 전체화면 모드로 진입
+        document.documentElement.requestFullscreen().then(() => {
+            console.log('전체화면 모드 진입 (F키)');
+        }).catch(err => {
+            console.error('전체화면 모드 진입 실패:', err);
+            // 실패시 브라우저 기본 F11 키 안내
+            showFullscreenHelp();
         });
     } else {
-        alert('테스트 링크: ' + currentUrl + '\n\n위 링크를 복사해서 친구들에게 공유해보세요!');
+        // 전체화면 모드 해제
+        document.exitFullscreen().then(() => {
+            console.log('전체화면 모드 해제 (F키)');
+        }).catch(err => {
+            console.error('전체화면 모드 해제 실패:', err);
+        });
     }
 }
 
 /**
- * 수동 캡처 방법들을 안내하는 함수
+ * 전체화면 도움말 표시
  */
-function showCaptureAlternatives() {
-    const alternatives = `
-🔧 화면 캡처 대안 방법들:
-
-📱 모바일:
-• 볼륨키 + 전원키 (안드로이드)
-• 홈버튼 + 전원키 (구형 아이폰)
-• 사이드키 + 볼륨키 (신형 아이폰)
-
-💻 PC/Mac:
-• GoFullPage 확장프로그램 설치 추천!
-• Windows: Win + Shift + S
-• Mac: Cmd + Shift + 4
-• Chrome: F12 > Device Toggle > 스크린샷 아이콘
-
-🌟 GoFullPage 사용법:
-1. Chrome 웹스토어에서 설치
-2. 확장프로그램 아이콘 클릭
-3. 또는 Ctrl+Shift+P (단축키)
-
-더 나은 화질과 전체 페이지 캡처가 가능합니다!
-    `;
-    
-    alert(alternatives);
-}
-
-/**
- * GoFullPage 설치 링크 제공
- */
-function openGoFullPageInstall() {
-    window.open('https://chrome.google.com/webstore/detail/gofullpage-full-page-scre/fdpohaocaechififmbbbbbknoalclacl', '_blank');
+function showFullscreenHelp() {
+    alert('🖥️ 전체화면 모드 안내\n\n📱 PC/Mac:\n• F11 키 - 전체화면 전환\n• ESC 키 - 전체화면 해제\n\n📱 모바일:\n브라우저 메뉴에서 "전체화면" 선택');
 }
 
 // --- 초기 설정 ---
 document.addEventListener('DOMContentLoaded', () => {
     initCamera(); // Initialize camera once on page load
+    
+    // 키보드 이벤트 리스너 추가 (F키로 전체화면 토글)
+    document.addEventListener('keydown', handleKeyPress);
 });

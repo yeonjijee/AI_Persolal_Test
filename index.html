@@ -13,6 +13,8 @@
     <div id="start-screen" class="screen"> 
         <img src="./images/00.png" alt="시작화면 배경" class="full-bg">
         <img src="./images/00start.png" alt="시작 버튼" class="start-btn" onclick="startQuiz()">
+        <!-- 전체화면 안내 -->
+        <div class="fullscreen-hint">F키 또는 F11: 전체화면 | ESC: 해제</div>
     </div>
 
     <!-- 퀴즈 화면 -->
@@ -31,10 +33,6 @@
         <div class="result-buttons-container"></div>
         <!-- 다시하기 버튼 -->
         <img src="./images/restart_button.png" class="fixed-btn left" alt="다시하기" onclick="reset()">
-        <!-- 화면 캡처 버튼 -->
-        <div class="fixed-btn center capture-btn" onclick="captureAndShare()" alt="결과 캡처하기">
-            <span style="font-size: 24px; color: white;">📷</span>
-        </div>
         <!-- 전체 AI 결과보기 버튼 -->
         <img src="./images/AI_button.png" class="fixed-btn right" alt="전체 결과보기" onclick="console.log('AI button clicked!'); showAllResults()">
     </div>
@@ -70,8 +68,6 @@
         </div>
     </div>
 
-    <!-- html2canvas 라이브러리 (화면 캡처용) -->
-    <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <!-- 자바스크립트 파일 로드 -->
     <script src="./script.js"></script>
 </body>
