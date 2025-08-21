@@ -116,6 +116,7 @@ let videoStream = null; // 카메라 스트림 저장 변수
  * 퀴즈를 시작하는 함수
  */
 function startQuiz() {
+    enterFullscreen(); // 전체화면 진입
     document.getElementById("start-screen").classList.add("hidden");
     document.getElementById("quiz-screen").classList.remove("hidden");
     showQuestion();
@@ -303,57 +304,47 @@ function stopCamera() {
     document.getElementById('camera-container').style.display = 'none';
 }
 
-// --- 전체화면 기능 (키보드 단축키) ---
+// --- 전체화면 제어 함수 ---
 /**
- * 키보드 이벤트 처리 함수
+ * 전체화면 모드로 진입하는 함수
  */
-function handleKeyPress(event) {
-    // F키 (F 또는 f)로 전체화면 토글
-    if (event.key === 'f' || event.key === 'F') {
-        // 입력 필드에서는 동작하지 않도록 예외 처리
-        if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
-            return;
+function enterFullscreen() {
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen().catch(err => {
+            console.error('전체화면 모드 진입 실패:', err.message);
+        });
+    } else if (elem.mozRequestFullScreen) { // Firefox
+        elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) { // Chrome, Safari, Opera
+        elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { // IE/Edge
+        elem.msRequestFullscreen();
+    }
+}
+
+/**
+ * 전체화면 모드를 해제하는 함수
+ */
+function exitFullscreen() {
+    if (document.exitFullscreen) {
+        if (document.fullscreenElement) { // Check if in fullscreen mode
+            document.exitFullscreen().catch(err => {
+                console.error('전체화면 모드 해제 실패:', err.message);
+            });
         }
-        
-        event.preventDefault();
-        toggleFullscreen();
+    } else if (document.mozCancelFullScreen) { // Firefox
+        document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) { // Chrome, Safari, Opera
+        document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) { // IE/Edge
+        document.msExitFullscreen();
     }
-}
-
-/**
- * 전체화면 모드를 토글하는 함수
- */
-function toggleFullscreen() {
-    if (!document.fullscreenElement) {
-        // 전체화면 모드로 진입
-        document.documentElement.requestFullscreen().then(() => {
-            console.log('전체화면 모드 진입 (F키)');
-        }).catch(err => {
-            console.error('전체화면 모드 진입 실패:', err);
-            // 실패시 브라우저 기본 F11 키 안내
-            showFullscreenHelp();
-        });
-    } else {
-        // 전체화면 모드 해제
-        document.exitFullscreen().then(() => {
-            console.log('전체화면 모드 해제 (F키)');
-        }).catch(err => {
-            console.error('전체화면 모드 해제 실패:', err);
-        });
-    }
-}
-
-/**
- * 전체화면 도움말 표시
- */
-function showFullscreenHelp() {
-    alert('🖥️ 전체화면 모드 안내\n\n📱 PC/Mac:\n• F11 키 - 전체화면 전환\n• ESC 키 - 전체화면 해제\n\n📱 모바일:\n브라우저 메뉴에서 "전체화면" 선택');
 }
 
 // --- 초기 설정 ---
 document.addEventListener('DOMContentLoaded', () => {
     initCamera(); // Initialize camera once on page load
-    
-    // 키보드 이벤트 리스너 추가 (F키로 전체화면 토글)
-    document.addEventListener('keydown', handleKeyPress);
 });
+
+console.log("Script fully loaded and event listeners attached.");

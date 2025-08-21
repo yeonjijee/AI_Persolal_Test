@@ -141,26 +141,6 @@ html, body {
     transform: scale(1.03);
 }
 
-/* 전체화면 안내 메시지 */
-.fullscreen-hint {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-family: Arial, sans-serif;
-    z-index: 100;
-    opacity: 0.8;
-    transition: opacity 0.3s ease;
-}
-
-.fullscreen-hint:hover {
-    opacity: 1;
-}
 
 
 /* 로딩 화면 */
