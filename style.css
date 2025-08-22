@@ -19,7 +19,7 @@ html, body {
 .full-bg {
     width: 100vw;
     height: 100vh;
-    object-fit: contain; /* 이미지 비율을 유지하며 컨테이너에 맞춤 */
+    object-fit: cover; /* 이미지 비율을 유지하며 화면을 꽉 채움 (잘릴 수 있음) */
     position: absolute;
     top: 0;
     left: 0;
@@ -101,7 +101,7 @@ html, body {
 .result-img {
     width: 100vw;
     height: 100vh;
-    object-fit: contain;
+    object-fit: cover;
     z-index: 1; /* 카메라보다 위에 위치 */
     position: relative;
 }
@@ -121,19 +121,19 @@ html, body {
     cursor: pointer;
     z-index: 50; /* z-index를 2에서 50으로 증가 */
     bottom: 7%;
-    width: clamp(120px, 30vw, 225px);
+    width: clamp(120px, 30vw, 300px);
     transform: scale(1);
     transition: transform 0.2s ease;
 }
 
 /* 왼쪽 버튼 (다시 시작) */
 .fixed-btn.left {
-    left: 15%;
+    left: max(15%, calc(50% - 450px));
 }
 
 /* 오른쪽 버튼 (전체 결과 보기) */
 .fixed-btn.right {
-    right: 15%;
+    right: max(15%, calc(50% - 450px));
 }
 
 
@@ -173,7 +173,7 @@ html, body {
     top: 20vh;
     left: 50%;
     transform: translateX(-50%);
-    width: clamp(120px, 25vw, 160px); /* 모바일에서 더 작게, 최소 120px, 최대 160px */
+    width: clamp(120px, 25vw, 250px); /* 모바일에서 더 작게, 최소 120px, 최대 160px */
     height: auto;
     cursor: pointer;
     transition: transform 0.2s ease;
@@ -190,7 +190,7 @@ html, body {
     grid-template-columns: repeat(2, 1fr); /* 2열 그리드 (2x4 배치) */
     column-gap: max(0.8vh, 5px); /* 가로 간격: vh에 비례, 최소 5px */
     row-gap: 0; /* 세로 간격을 0으로 설정 */
-    max-width: 450px;
+    max-width: 600px;
     width: 100%;
     padding: 0 20px;
     justify-items: center;
@@ -203,8 +203,8 @@ html, body {
 
 /* AI 로고 버튼 */
 .ai-button {
-    width: 18.59vh; /* 16.9vh에서 10% 증가 (18.59vh) */
-    height: 18.59vh; /* 16.9vh에서 10% 증가 (18.59vh) */
+    width: clamp(120px, 20vw, 280px);
+    height: clamp(120px, 20vw, 280px);
     object-fit: contain;
     cursor: pointer;
     transition: transform 0.2s ease;
