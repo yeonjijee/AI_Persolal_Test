@@ -19,7 +19,7 @@ html, body {
 .full-bg {
     width: 100vw;
     height: 100vh;
-    object-fit: cover; /* 이미지 비율을 유지하며 화면을 꽉 채움 (잘릴 수 있음) */
+    object-fit: contain; /* 이미지 비율을 유지하며 컨테이너에 맞춤 */
     position: absolute;
     top: 0;
     left: 0;
@@ -101,7 +101,7 @@ html, body {
 .result-img {
     width: 100vw;
     height: 100vh;
-    object-fit: cover;
+    object-fit: contain;
     z-index: 1; /* 카메라보다 위에 위치 */
     position: relative;
 }
