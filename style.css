@@ -121,19 +121,19 @@ html, body {
     cursor: pointer;
     z-index: 50; /* z-index를 2에서 50으로 증가 */
     bottom: 7%;
-    width: clamp(120px, 30vw, 300px);
+    width: clamp(120px, 30vw, 225px);
     transform: scale(1);
     transition: transform 0.2s ease;
 }
 
 /* 왼쪽 버튼 (다시 시작) */
 .fixed-btn.left {
-    left: max(15%, calc(50% - 450px));
+    left: 15%;
 }
 
 /* 오른쪽 버튼 (전체 결과 보기) */
 .fixed-btn.right {
-    right: max(15%, calc(50% - 450px));
+    right: 15%;
 }
 
 
@@ -173,7 +173,7 @@ html, body {
     top: 20vh;
     left: 50%;
     transform: translateX(-50%);
-    width: clamp(120px, 25vw, 250px); /* 모바일에서 더 작게, 최소 120px, 최대 160px */
+    width: clamp(120px, 25vw, 160px); /* 모바일에서 더 작게, 최소 120px, 최대 160px */
     height: auto;
     cursor: pointer;
     transition: transform 0.2s ease;
@@ -190,7 +190,7 @@ html, body {
     grid-template-columns: repeat(2, 1fr); /* 2열 그리드 (2x4 배치) */
     column-gap: max(0.8vh, 5px); /* 가로 간격: vh에 비례, 최소 5px */
     row-gap: 0; /* 세로 간격을 0으로 설정 */
-    max-width: 600px;
+    max-width: 450px;
     width: 100%;
     padding: 0 20px;
     justify-items: center;
@@ -203,8 +203,8 @@ html, body {
 
 /* AI 로고 버튼 */
 .ai-button {
-    width: clamp(120px, 20vw, 280px);
-    height: clamp(120px, 20vw, 280px);
+    width: 18.59vh; /* 16.9vh에서 10% 증가 (18.59vh) */
+    height: 18.59vh; /* 16.9vh에서 10% 증가 (18.59vh) */
     object-fit: contain;
     cursor: pointer;
     transition: transform 0.2s ease;
@@ -219,7 +219,8 @@ html, body {
 #camera {
     transform: scaleX(-1);
     aspect-ratio: 5/5;
-    height: 40vh;
+    height: clamp(200px, 30vh, 500px);
     border-radius: 12px;
     object-fit: cover;
+    filter: brightness(1.1) contrast(0.9) saturate(1.2) sepia(0.25);
 }
