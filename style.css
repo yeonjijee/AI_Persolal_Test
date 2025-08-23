@@ -173,7 +173,7 @@ html, body {
     top: 20vh;
     left: 50%;
     transform: translateX(-50%);
-    width: clamp(120px, 25vw, 160px); /* 모바일에서 더 작게, 최소 120px, 최대 160px */
+    width: clamp(120px, 25vw, 180px); /* 모바일에서 더 작게, 최소 120px, 최대 180px */
     height: auto;
     cursor: pointer;
     transition: transform 0.2s ease;
@@ -186,6 +186,7 @@ html, body {
 
 /* AI 로고 버튼 그리드 컨테이너 */
 .grid-container {
+    box-sizing: border-box;
     display: grid;
     grid-template-columns: repeat(2, 1fr); /* 2열 그리드 (2x4 배치) */
     column-gap: max(0.8vh, 5px); /* 가로 간격: vh에 비례, 최소 5px */
